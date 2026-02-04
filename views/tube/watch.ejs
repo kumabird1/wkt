@@ -363,7 +363,10 @@
   <% if (!video) return; %>
   <% if (video.type.endsWith("Video")) { %>
     <div class="bg-gray-800 p-2 rounded result-item">
-      <a href="/wkt/watch/<%= video.id %>">
+      <form action="/watch" method="POST">
+  <input type="hidden" name="id" value="<%= video.id %>">
+  <button type="submit">…</button>
+</form>
         <img src="/wkt/back/vi/<%= video.id %>/maxresdefault.jpg" alt="サムネ" class="w-full h-auto rounded">
       </a>
       <div class="flex items-center mt-2">
