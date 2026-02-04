@@ -24,7 +24,7 @@
     <!-- 上部検索バー（POST化済み） -->
     <header class="bg-gray-800 p-4 flex justify-between items-center fixed top-0 left-0 w-full z-10">
         <form action="/search" method="POST" class="w-1/2 relative" id="searchForm">
-            <input type="text" name="q" id="searchbox" placeholder="検索" value="<%= query %>" class="searchbox w-full p-2 pr-10 rounded bg-gray-700 text-white">
+            <input type="text" name="q" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
             <button type="button" id="clearBtn" class="absolute right-2 top-1/2 -translate-y-1/2 flex items-center justify-center h-6 w-6 rounded-full hover:bg-gray-400 text-white text-lg leading-none hidden">
              ×
             </button>
