@@ -378,7 +378,12 @@
         </p>
       </div>
       <p class="text-sm font-bold mt-1">
-        <a href="/wkt/watch/<%= video.id %>"><%= video.title.text %></a>
+<form action="/watch" method="POST" style="display:inline;">
+  <input type="hidden" name="id" value="<%= video.id %>">
+  <button type="submit" style="all:unset;cursor:pointer;color:#3ea6ff;text-decoration:underline;">
+    <%= video.title.text %>
+  </button>
+</form>
       </p>
       <p class="text-xs text-gray-400">
         <%= video.short_view_count?.text || video.view_count?.text %>
