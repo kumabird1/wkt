@@ -207,7 +207,16 @@
             <% videoInfo.watch_next_feed.forEach(video => { %>
               <% if (video.type.endsWith("Video")) { %>
                 <div class="result-item w-auto h-auto bg-gray-700 p-5 rounded">
-                    <a href="/wkt/watch/<%= video.id %>" class="thumbnail">
+                    <form action="/watch" method="POST" class="thumbnail">
+  <input type="hidden" name="id" value="<%= video.id %>">
+  <button type="submit" style="all:unset;cursor:pointer;">
+    <img loading="lazy"
+         src="/wkt/back/vi/<%= video.id %>/mqdefault.jpg"
+         alt="<%= video.title.text %>"
+         class="w-full h-auto rounded">
+    <span class="video-duration"><%= video.duration.text %></span>
+  </button>
+</form>
                         <img loading="lazy" src="/wkt/back/vi/<%= video.id %>/mqdefault.jpg" alt="<%= video.title.text %>" class="w-full h-auto rounded">
                         <span class="video-duration"><%= video.duration.text %></span>
                     </a>
