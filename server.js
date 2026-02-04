@@ -67,13 +67,11 @@ require("./routes/wakametube/watch")(req, res);
   }
 });
 
-// ★★★ POST /watch（動画IDを履歴に残さない） ★★★
+// /watch に POST されたら、ID を受け取り、
+// URL に ID を出さずに wrapper を表示する
 app.post('/watch', (req, res) => {
   const videoId = req.body.id;
-  if (!videoId) return res.status(400).send("動画IDがありません");
-
-  req.body.id = videoId;
-require("./routes/wakametube/watch")(req, res);
+  res.render("watch_wrapper.ejs", { videoId });
 });
 
 // ★★★ POST /search（検索ワードを履歴に残さない） ★★★
