@@ -1,25 +1,125 @@
+"use strict";
 const express = require("express");
+const path = require("path");
+const compression = require("compression");
 const bodyParser = require("body-parser");
-const { exec } = require("child_process");
+const YouTubeJS = require("youtubei.js");
+const serverYt = require("./server/youtube.js");
+const cors = require('cors');
+const cookieParser = require('cookie-parser');
 
-const app = express();
+let app = express();
+let client;
+
+app.use(compression());
+app.use(express.static(__dirname + "/public"));
+app.set("view engine", "ejs");
+app.set("views", path.join(__dirname, "views"));
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
+app.use(cors());
+app.set("trust proxy", 1);
+app.use(cookieParser());
 
-app.post("/watch", (req, res) => {
-    const id = req.body.id;
-
-    // wkm を動画ID付きで起動
-    exec(`wkm ${id}`, (err, stdout, stderr) => {
-        if (err) {
-            console.error(err);
-            return;
-        }
-        console.log(stdout);
-    });
-
-    // ブラウザ側には履歴に残らないページを返す
-    res.send("動画を再生中（履歴には残りません）");
+// ログインチェック
+app.use((req, res, next) => {
+    if (req.cookies.loginok !== 'ok' && !req.path.includes('login') && !req.path.includes('back')) {
+        return res.redirect('/login');
+    } else {
+        next();
+    }
 });
 
-app.listen(3000, () => console.log("server running"));
+// ホーム
+app.get('/', (req, res) => {
+  if (req.query.r === 'y') {
+    res.render("home/index");
+  } else {
+    res.redirect('/wkt');
+  }
+});
+
+// アプリ一覧
+app.get('/app', (req, res) => {
+  res.render("app/list");
+});
+
+// ルート読み込み
+app.use("/wkt", require("./routes/wakametube"));
+app.use("/game", require("./routes/game"));
+app.use("/tools", require("./routes/tools"));
+app.use("/pp", require("./routes/proxy"));
+app.use("/wakams", require("./routes/music"));
+app.use("/blog", require("./routes/blog"));
+
+// ログイン
+app.get('/login', (req, res) => {
+    res.render('home/login');
+});
+
+// GET /watch（既存）
+app.get('/watch', (req, res) => {
+  const videoId = req.query.v;
+  if (videoId) {
+    res.redirect(`/wkt/watch/${videoId}`);
+  } else {
+    res.redirect(`/wkt/trend`);
+  }
+});
+
+// ★★★ 追加：POST /watch（履歴に残らない版） ★★★
+app.post('/watch', (req, res) => {
+  const videoId = req.body.id;
+
+  if (!videoId) {
+    return res.status(400).send("動画IDがありません");
+  }
+
+  // 履歴に動画IDを残さず内部で処理
+  res.redirect(`/wkt/watch/${videoId}`);
+});
+
+// チャンネル
+app.get('/channel/:id', (req, res) => {
+  const id = req.params.id;
+  res.redirect(`/wkt/c/${id}`);
+});
+app.get('/channel/:id/join', (req, res) => {
+  const id = req.params.id;
+  res.redirect(`/wkt/c/${id}`);
+});
+
+// ハッシュタグ
+app.get('/hashtag/:des', (req, res) => {
+  const des = req.params.des;
+  res.redirect(`/wkt/s?q=${des}`);
+});
+
+// サンドボックス
+app.use("/sandbox", require("./routes/sandbox"));
+
+// 404
+app.use((req, res) => {
+  res.status(404).render("error.ejs", {
+    title: "404 Not found",
+    content: "そのページは存在しません。",
+  });
+});
+
+app.on("error", console.error);
+
+// YouTube API 初期化
+async function initInnerTube() {
+  try {
+    client = await YouTubeJS.Innertube.create({ lang: "ja", location: "JP"});
+    serverYt.setClient(client);
+    const listener = app.listen(process.env.PORT || 3000, () => {
+      console.log(process.pid, "Ready.", listener.address().port);
+    });
+  } catch (e) {
+    console.error(e);
+    setTimeout(initInnerTube, 10000);
+  }
+}
+
+process.on("unhandledRejection", console.error);
+initInnerTube();
