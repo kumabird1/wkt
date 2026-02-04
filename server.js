@@ -66,16 +66,22 @@ app.get('/watch', (req, res) => {
   }
 });
 
-// ★★★ 追加：POST /watch（履歴に残らない版） ★★★
+// ★★★ POST /watch（動画IDを履歴に残さない） ★★★
 app.post('/watch', (req, res) => {
   const videoId = req.body.id;
+  if (!videoId) return res.status(400).send("動画IDがありません");
 
-  if (!videoId) {
-    return res.status(400).send("動画IDがありません");
-  }
-
-  // 履歴に動画IDを残さず内部で処理
+  // URL に ID を出さずに内部で処理
   res.redirect(`/wkt/watch/${videoId}`);
+});
+
+// ★★★ POST /search（検索ワードを履歴に残さない） ★★★
+app.post('/search', (req, res) => {
+  const q = req.body.q;
+  if (!q) return res.status(400).send("検索ワードがありません");
+
+  // URL に q を出さずに内部で処理
+  res.redirect(`/wkt/s?q=${encodeURIComponent(q)}`);
 });
 
 // チャンネル
