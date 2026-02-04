@@ -71,21 +71,19 @@ app.post('/watch', (req, res) => {
   const videoId = req.body.id;
   if (!videoId) return res.status(400).send("動画IDがありません");
 
-  // URL に ID を出さずに内部で処理
   res.redirect(`/wkt/watch/${videoId}`);
 });
 
 // ★★★ POST /search（検索ワードを履歴に残さない） ★★★
-app.post("/search", async (req, res) => {
-    const query = req.body.q;
-    const page = 1;
-    const limit = 20;
+// ★★★ GET にリダイレクトしないように修正 ★★★
+app.post('/search', async (req, res) => {
+  const q = req.body.q;
+  if (!q) return res.status(400).send("検索ワードがありません");
 
-    res.render("tube/search.ejs", {
-        res: await serverYt.search(query, limit, page),
-        query: query,
-        page
-    });
+  // wakametube.js の POST /s を直接呼び出す
+  req.body.q = q;
+  req.url = "/wkt/s";
+  app._router.handle(req, res);
 });
 
 // チャンネル
