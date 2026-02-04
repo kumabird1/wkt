@@ -60,7 +60,8 @@ app.get('/login', (req, res) => {
 app.get('/watch', (req, res) => {
   const videoId = req.query.v;
   if (videoId) {
-    res.redirect(`/wkt/watch/${videoId}`);
+    req.body.id = videoId;
+require("./routes/wakametube/watch")(req, res);
   } else {
     res.redirect(`/wkt/trend`);
   }
