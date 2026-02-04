@@ -76,12 +76,16 @@ app.post('/watch', (req, res) => {
 });
 
 // ★★★ POST /search（検索ワードを履歴に残さない） ★★★
-app.post('/search', (req, res) => {
-  const q = req.body.q;
-  if (!q) return res.status(400).send("検索ワードがありません");
+app.post("/search", async (req, res) => {
+    const query = req.body.q;
+    const page = 1;
+    const limit = 20;
 
-  // URL に q を出さずに内部で処理
-  res.redirect(`/wkt/s?q=${encodeURIComponent(q)}`);
+    res.render("tube/search.ejs", {
+        res: await serverYt.search(query, limit, page),
+        query: query,
+        page
+    });
 });
 
 // チャンネル
