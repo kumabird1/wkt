@@ -72,7 +72,8 @@ app.post('/watch', (req, res) => {
   const videoId = req.body.id;
   if (!videoId) return res.status(400).send("動画IDがありません");
 
-  res.redirect(`/wkt/watch/${videoId}`);
+  req.body.id = videoId;
+require("./routes/wakametube/watch")(req, res);
 });
 
 // ★★★ POST /search（検索ワードを履歴に残さない） ★★★
