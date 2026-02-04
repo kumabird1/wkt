@@ -71,7 +71,32 @@ require("./routes/wakametube/watch")(req, res);
 // URL に ID を出さずに wrapper を表示する
 app.post('/watch', (req, res) => {
   const videoId = req.body.id;
-  res.render("watch_wrapper.ejs", { videoId });
+
+  res.send(`
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="UTF-8">
+      <title>わかめ</title>
+      <style>
+        body, html {
+          margin: 0;
+          padding: 0;
+          height: 100%;
+          overflow: hidden;
+        }
+        iframe {
+          width: 100%;
+          height: 100%;
+          border: none;
+        }
+      </style>
+    </head>
+    <body>
+      <iframe src="/wkt/watch/${videoId}"></iframe>
+    </body>
+    </html>
+  `);
 });
 
 // ★★★ POST /search（検索ワードを履歴に残さない） ★★★
