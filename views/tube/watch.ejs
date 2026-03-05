@@ -1206,6 +1206,24 @@ function showerrorMessage(text) {
         moved = false;
     });
 }
+// 動画の再生開始時に履歴を記録
+video.addEventListener('play', () => {
+    const videoId = '<%= videoId %>';
+    const playbackTime = new Date().toISOString();
+    
+    // バックエンドに再生履歴を送信
+    fetch('/api/history/log-playback', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            videoId: videoId,
+            playbackTime: playbackTime,
+            timestamp: Date.now()
+        })
+    }).catch(error => console.error('履歴記録エラー:', error));
+});
 </script>
 </body>
 </html>
