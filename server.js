@@ -50,6 +50,8 @@ app.use("/tools", require("./routes/tools"));
 app.use("/pp", require("./routes/proxy"));
 app.use("/wakams", require("./routes/music"));
 app.use("/blog", require("./routes/blog"));
+const historyController = require("./controllers/history.js");
+app.use("/api/history", historyController);
 
 // ログイン
 app.get('/login', (req, res) => {
