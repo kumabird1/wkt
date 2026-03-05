@@ -3,6 +3,8 @@ yarn.lock
 node_modules
 yarn-error.log
 pnpm-lock.yaml
-
+.env
+.env.local
+.env.*.local
 local
 local/*
